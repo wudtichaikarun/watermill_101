@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	fmt "fmt"
 	"log"
 	"sync"
+
+	"github.com/theritikchoure/logx"
 )
 
 // BookingsFinancialReport is a read model, which calculates how much money we may earn from bookings.
@@ -36,7 +39,8 @@ func (b *BookingsFinancialReport) Handle(ctx context.Context, e interface{}) err
 	defer b.lock.Unlock()
 
 	event := e.(*RoomBooked)
-	log.Printf("[receive] BookingsFinancialReport receive event [RoomBooked] room: %s", event.RoomId)
+	eventMes := fmt.Sprintf("[receive] BookingsFinancialReport receive event [RoomBooked] room: %s", event.RoomId)
+	logx.Log(eventMes, logx.FGWHITE, logx.BGGREEN)
 
 	// When we are using Pub/Sub which doesn't provide exactly-once delivery semantics, we need to deduplicate messages.
 	// GoChannel Pub/Sub provides exactly-once delivery,

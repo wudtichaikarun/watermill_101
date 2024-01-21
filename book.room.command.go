@@ -2,11 +2,12 @@ package main
 
 import (
 	"context"
-	"log"
+	fmt "fmt"
 	"math/rand"
 
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill/components/cqrs"
+	"github.com/theritikchoure/logx"
 )
 
 // BookRoomHandler is a command handler, which handles BookRoom command and emits RoomBooked.
@@ -30,14 +31,18 @@ func (b BookRoomHandler) Handle(ctx context.Context, c interface{}) error {
 
 	// c is always the type returned by `NewCommand`, so casting is always safe
 	cmd := c.(*BookRoom)
-	log.Printf("[receive] BookRoomHandler receive command [bookRoomCmd] room: %s", cmd.RoomId)
+
+	cmdMes := fmt.Sprintf("[receive] BookRoomHandler receive command [bookRoomCmd] room: %s", cmd.RoomId)
+	logx.Log(cmdMes, logx.FGWHITE, logx.BGBLUE)
 
 	// some random price, in production you probably will calculate in wiser way
 	price := (rand.Int63n(40) + 1) * 10
 
 	// RoomBooked will be handled by OrderBeerOnRoomBooked event handler,
 	// in future RoomBooked may be handled by multiple event handler
-	log.Printf("[public] BookRoomHandler public event [RoomBooked] room: %s", cmd.RoomId)
+	eventMes := fmt.Sprintf("[public] BookRoomHandler public event [RoomBooked] room: %s", cmd.RoomId)
+	logx.Log(eventMes, logx.FGWHITE, logx.BGGREEN)
+
 	if err := b.eventBus.Publish(ctx, &RoomBooked{
 		ReservationId: watermill.NewUUID(),
 		RoomId:        cmd.RoomId,

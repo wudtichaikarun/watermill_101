@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	"log"
+	fmt "fmt"
 	"math/rand"
 
 	"github.com/ThreeDotsLabs/watermill/components/cqrs"
+	"github.com/theritikchoure/logx"
 )
 
 // OrderBeerOnRoomBooked is a event handler, which handles RoomBooked event and emits OrderBeer command.
@@ -24,14 +25,18 @@ func (OrderBeerOnRoomBooked) NewEvent() interface{} {
 
 func (o OrderBeerOnRoomBooked) Handle(ctx context.Context, e interface{}) error {
 	event := e.(*RoomBooked)
-	log.Printf("[receive] OrderBeerOnRoomBooked receive event [RoomBooked] room: %s", event.RoomId)
+
+	eventMes := fmt.Sprintf("[receive] OrderBeerOnRoomBooked receive event [RoomBooked] room: %s", event.RoomId)
+	logx.Log(eventMes, logx.FGWHITE, logx.BGGREEN)
 
 	orderBeerCmd := &OrderBeer{
 		RoomId: event.RoomId,
 		Count:  rand.Int63n(10) + 1,
 	}
 
-	log.Printf("[public] OrderBeerOnRoomBooked public command [orderBeerCmd] room: %s", event.RoomId)
+	cmdMes := fmt.Sprintf("[public] OrderBeerOnRoomBooked public command [orderBeerCmd] room: %s", event.RoomId)
+	logx.Log(cmdMes, logx.FGWHITE, logx.BGBLUE)
+
 	if err := o.commandBus.Send(ctx, orderBeerCmd); err != nil {
 		return err
 	}

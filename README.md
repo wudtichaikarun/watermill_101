@@ -52,3 +52,8 @@ $ protoc --go_out=. inputs/events.proto
 2024/01/21 16:53:22 [receive] OrderBeerHandler receive command [orderBeerCmd] room: 2
 2024/01/21 16:53:22 [public] OrderBeerHandler public event [BeerOrdered] room: 2
 ```
+
+- blue for command
+- green for event
+
+![result image](./images/result.png)

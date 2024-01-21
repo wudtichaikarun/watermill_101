@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	fmt "fmt"
-	"log"
 	"time"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -13,11 +12,14 @@ import (
 	"github.com/ThreeDotsLabs/watermill/components/cqrs"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/ThreeDotsLabs/watermill/message/router/middleware"
+	"github.com/theritikchoure/logx"
 )
 
 var amqpAddress = "amqp://guest:guest@localhost:5672/"
 
 func main() {
+	logx.ColoringEnabled = true
+
 	logger := watermill.NewStdLogger(false, false)
 	cqrsMarshaler := cqrs.ProtobufMarshaler{}
 
@@ -126,7 +128,9 @@ func publishCommands(commandBus *cqrs.CommandBus) func() {
 			EndDate:   endDate,
 		}
 
-		log.Printf("[public] Guest public command [bookRoomCmd] room: %s", bookRoomCmd.RoomId)
+		m := fmt.Sprintf("[public] Guest public command [bookRoomCmd] room: %s", bookRoomCmd.RoomId)
+		logx.Log(m, logx.FGWHITE, logx.BGBLUE)
+
 		if err := commandBus.Send(context.Background(), bookRoomCmd); err != nil {
 			panic(err)
 		}

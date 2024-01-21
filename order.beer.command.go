@@ -2,11 +2,12 @@ package main
 
 import (
 	"context"
-	"log"
+	fmt "fmt"
 	"math/rand"
 
 	"github.com/ThreeDotsLabs/watermill/components/cqrs"
 	"github.com/pkg/errors"
+	"github.com/theritikchoure/logx"
 )
 
 // OrderBeerHandler is a command handler, which handles OrderBeer command and emits BeerOrdered.
@@ -25,14 +26,18 @@ func (o OrderBeerHandler) NewCommand() interface{} {
 
 func (o OrderBeerHandler) Handle(ctx context.Context, c interface{}) error {
 	cmd := c.(*OrderBeer)
-	log.Printf("[receive] OrderBeerHandler receive command [orderBeerCmd] room: %s", cmd.RoomId)
+
+	cmdMes := fmt.Sprintf("[receive] OrderBeerHandler receive command [orderBeerCmd] room: %s", cmd.RoomId)
+	logx.Log(cmdMes, logx.FGWHITE, logx.BGBLUE)
 
 	if rand.Int63n(10) == 0 {
 		// sometimes there is no beer left, command will be retried
 		return errors.Errorf("no beer left for room %s, please try later", cmd.RoomId)
 	}
 
-	log.Printf("[public] OrderBeerHandler public event [BeerOrdered] room: %s", cmd.RoomId)
+	eventMes := fmt.Sprintf("[public] OrderBeerHandler public event [BeerOrdered] room: %s", cmd.RoomId)
+	logx.Log(eventMes, logx.FGWHITE, logx.BGGREEN)
+
 	if err := o.eventBus.Publish(ctx, &BeerOrdered{
 		RoomId: cmd.RoomId,
 		Count:  cmd.Count,

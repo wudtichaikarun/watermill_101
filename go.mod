@@ -19,4 +19,5 @@ require (
 	github.com/lithammer/shortuuid/v3 v3.0.7 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/rabbitmq/amqp091-go v1.6.0 // indirect
+	github.com/theritikchoure/logx v1.1.0
 )

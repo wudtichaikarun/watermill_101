@@ -3,8 +3,6 @@ package main;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/wudtichaikarun/watermill_101";
-
 message BookRoom {
     string room_id = 1;
     string guest_name = 2;

@@ -1,7 +1,5 @@
-proto:
-	protoc --proto_path=inputs --go_out=. --go_opt=paths=source_relative \
-	--go-grpc_out=. --go-grpc_opt=paths=source_relative \
-	inputs/*.proto
+# proto:
+# 	protoc --go_out=paths=source_relative:. -I inputs inputs/events.proto 
 
 tidy:
 	go mod tidy

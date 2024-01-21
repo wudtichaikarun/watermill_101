@@ -24,14 +24,15 @@ func (o OrderBeerHandler) NewCommand() interface{} {
 }
 
 func (o OrderBeerHandler) Handle(ctx context.Context, c interface{}) error {
-	log.Printf("[receive] OrderBeerHandler receive command [orderBeerCmd]")
 	cmd := c.(*OrderBeer)
+	log.Printf("[receive] OrderBeerHandler receive command [orderBeerCmd] room: %s", cmd.RoomId)
 
 	if rand.Int63n(10) == 0 {
 		// sometimes there is no beer left, command will be retried
 		return errors.Errorf("no beer left for room %s, please try later", cmd.RoomId)
 	}
 
+	log.Printf("[public] OrderBeerHandler public event [BeerOrdered] room: %s", cmd.RoomId)
 	if err := o.eventBus.Publish(ctx, &BeerOrdered{
 		RoomId: cmd.RoomId,
 		Count:  cmd.Count,
@@ -39,6 +40,5 @@ func (o OrderBeerHandler) Handle(ctx context.Context, c interface{}) error {
 		return err
 	}
 
-	log.Printf("[public] OrderBeerHandler public event [BeerOrdered]")
 	return nil
 }

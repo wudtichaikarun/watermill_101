@@ -30,13 +30,13 @@ func (BookingsFinancialReport) NewEvent() interface{} {
 }
 
 func (b *BookingsFinancialReport) Handle(ctx context.Context, e interface{}) error {
-	log.Printf("[receive] BookingsFinancialReport receive event [RoomBooked]")
 
 	// Handle may be called concurrently, so it need to be thread safe.
 	b.lock.Lock()
 	defer b.lock.Unlock()
 
 	event := e.(*RoomBooked)
+	log.Printf("[receive] BookingsFinancialReport receive event [RoomBooked] room: %s", event.RoomId)
 
 	// When we are using Pub/Sub which doesn't provide exactly-once delivery semantics, we need to deduplicate messages.
 	// GoChannel Pub/Sub provides exactly-once delivery,
@@ -48,6 +48,6 @@ func (b *BookingsFinancialReport) Handle(ctx context.Context, e interface{}) err
 
 	b.totalCharge += event.Price
 
-	log.Printf("generate report booked rooms for $%d\n", b.totalCharge)
+	log.Printf("[_______] BookingsFinancialReport generate report booked rooms: %s for $%d\n", event.RoomId, b.totalCharge)
 	return nil
 }

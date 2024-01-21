@@ -27,16 +27,17 @@ func (b BookRoomHandler) NewCommand() interface{} {
 }
 
 func (b BookRoomHandler) Handle(ctx context.Context, c interface{}) error {
-	log.Printf("[receive] BookRoomHandler receive command [bookRoomCmd]")
 
 	// c is always the type returned by `NewCommand`, so casting is always safe
 	cmd := c.(*BookRoom)
+	log.Printf("[receive] BookRoomHandler receive command [bookRoomCmd] room: %s", cmd.RoomId)
 
 	// some random price, in production you probably will calculate in wiser way
 	price := (rand.Int63n(40) + 1) * 10
 
 	// RoomBooked will be handled by OrderBeerOnRoomBooked event handler,
 	// in future RoomBooked may be handled by multiple event handler
+	log.Printf("[public] BookRoomHandler public event [RoomBooked] room: %s", cmd.RoomId)
 	if err := b.eventBus.Publish(ctx, &RoomBooked{
 		ReservationId: watermill.NewUUID(),
 		RoomId:        cmd.RoomId,
@@ -48,6 +49,5 @@ func (b BookRoomHandler) Handle(ctx context.Context, c interface{}) error {
 		return err
 	}
 
-	log.Printf("[public] BookRoomHandler public event [RoomBooked]")
 	return nil
 }

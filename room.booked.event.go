@@ -23,19 +23,19 @@ func (OrderBeerOnRoomBooked) NewEvent() interface{} {
 }
 
 func (o OrderBeerOnRoomBooked) Handle(ctx context.Context, e interface{}) error {
-	log.Printf("[receive] OrderBeerOnRoomBooked receive event [RoomBooked]")
 	event := e.(*RoomBooked)
+	log.Printf("[receive] OrderBeerOnRoomBooked receive event [RoomBooked] room: %s", event.RoomId)
 
 	orderBeerCmd := &OrderBeer{
 		RoomId: event.RoomId,
 		Count:  rand.Int63n(10) + 1,
 	}
 
+	log.Printf("[public] OrderBeerOnRoomBooked public command [orderBeerCmd] room: %s", event.RoomId)
 	if err := o.commandBus.Send(ctx, orderBeerCmd); err != nil {
 		return err
 	}
 
-	log.Printf("[public] OrderBeerOnRoomBooked public command [orderBeerCmd]")
 	return nil
 
 }

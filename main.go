@@ -104,7 +104,7 @@ func main() {
 
 	// publish BookRoom commands every second to simulate incoming traffic
 	go publishCommands(cqrsFacade.CommandBus())
-
+	// cqrsFacade.CommandBus()
 	// processors are based on router, so they will work when router will start
 	if err := router.Run(context.Background()); err != nil {
 		panic(err)
@@ -125,11 +125,12 @@ func publishCommands(commandBus *cqrs.CommandBus) func() {
 			StartDate: startDate,
 			EndDate:   endDate,
 		}
+
+		log.Printf("[public] Guest public command [bookRoomCmd] room: %s", bookRoomCmd.RoomId)
 		if err := commandBus.Send(context.Background(), bookRoomCmd); err != nil {
 			panic(err)
 		}
 
-		log.Printf("[public] Guest public command [bookRoomCmd]")
 		time.Sleep(10 * time.Second)
 	}
 }

@@ -5,25 +5,25 @@ import (
 	fmt "fmt"
 	"time"
 
-	"google.golang.org/protobuf/types/known/timestamppb"
-
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-amqp/v2/pkg/amqp"
 	"github.com/ThreeDotsLabs/watermill/components/cqrs"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/ThreeDotsLabs/watermill/message/router/middleware"
 	"github.com/theritikchoure/logx"
-	"github.com/wudtichaikarun/watermill_101/events"
+	"github.com/wudtichaikarun/watermill_101/handlers"
+	"github.com/wudtichaikarun/watermill_101/pkg/events"
 )
 
-// var amqpAddress = "amqp://guest:guest@localhost:5672/"
-var amqpAddress = "amqp://guest:guest@rabbitmq:5672/"
+var amqpAddress = "amqp://guest:guest@localhost:5672/"
+
+// var amqpAddress = "amqp://guest:guest@rabbitmq:5672/"
 
 func main() {
 	logx.ColoringEnabled = true
 
 	logger := watermill.NewStdLogger(false, false)
-	cqrsMarshaler := cqrs.ProtobufMarshaler{}
+	cqrsMarshaler := cqrs.JSONMarshaler{}
 
 	// You can use any Pub/Sub implementation from here: https://watermill.io/docs/pub-sub-implementations/
 	// Detailed RabbitMQ implementation: https://watermill.io/docs/pub-sub-implementations/#rabbitmq-amqp
@@ -67,8 +67,8 @@ func main() {
 		},
 		CommandHandlers: func(cb *cqrs.CommandBus, eb *cqrs.EventBus) []cqrs.CommandHandler {
 			return []cqrs.CommandHandler{
-				events.BookRoomHandler{EventBus: eb},
-				events.OrderBeerHandler{EventBus: eb},
+				handlers.BookRoomHandler{EventBus: eb},
+				handlers.OrderBeerHandler{EventBus: eb},
 			}
 		},
 		CommandsPublisher: commandsPublisher,
@@ -85,8 +85,8 @@ func main() {
 		},
 		EventHandlers: func(cb *cqrs.CommandBus, eb *cqrs.EventBus) []cqrs.EventHandler {
 			return []cqrs.EventHandler{
-				events.OrderBeerOnRoomBooked{CommandBus: cb},
-				events.NewBookingsFinancialReport(),
+				handlers.OrderBeerOnRoomBooked{CommandBus: cb},
+				handlers.NewBookingsFinancialReport(),
 			}
 		},
 		EventsPublisher: eventsPublisher,
@@ -120,17 +120,14 @@ func publishCommands(commandBus *cqrs.CommandBus) func() {
 	for {
 		i++
 
-		startDate := timestamppb.New(time.Now())
-		endDate := timestamppb.New(time.Now().Add(time.Hour * 24 * 3))
-
 		bookRoomCmd := &events.BookRoom{
-			RoomId:    fmt.Sprintf("%d", i),
+			RoomID:    fmt.Sprintf("%d", i),
 			GuestName: "John",
-			StartDate: startDate,
-			EndDate:   endDate,
+			StartDate: time.Now(),
+			EndDate:   time.Now().Add(time.Hour * 24 * 3),
 		}
 
-		m := fmt.Sprintf("[public] Guest public command [bookRoomCmd] room: %s", bookRoomCmd.RoomId)
+		m := fmt.Sprintf("[public] Guest public command [bookRoomCmd] room: %s", bookRoomCmd.RoomID)
 		logx.Log(m, logx.FGWHITE, logx.BGBLUE)
 
 		if err := commandBus.Send(context.Background(), bookRoomCmd); err != nil {
@@ -142,7 +139,7 @@ func publishCommands(commandBus *cqrs.CommandBus) func() {
 }
 
 /**
-	events.go
+	handlers.go
 		"[public] Guest public command [bookRoomCmd]"
 
 	book.room.command.go

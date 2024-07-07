@@ -37,6 +37,24 @@ $ protoc --go_out=. inputs/events.proto
 
 ```
 
+## rabbitmq
+
+local
+https://www.rabbitmq.com/docs/download
+
+```
+// username: guest password: guest
+// main.go => var amqpAddress = "amqp://guest:guest@localhost:5672/"
+docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management
+```
+
+using docker compose
+
+```
+// main.og -> var amqpAddress = "amqp://guest:guest@rabbitmq:5672/"
+make compose-dev
+```
+
 ## example log result
 
 ```

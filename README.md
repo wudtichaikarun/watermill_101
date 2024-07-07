@@ -52,6 +52,8 @@ using docker compose
 
 ```
 // main.og -> var amqpAddress = "amqp://guest:guest@rabbitmq:5672/"
+// admin -> http://127.0.0.1:15672/#/
+// username: guest password: guest
 make compose-dev
 ```
 

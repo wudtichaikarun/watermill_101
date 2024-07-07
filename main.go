@@ -15,9 +15,9 @@ import (
 	"github.com/wudtichaikarun/watermill_101/pkg/events"
 )
 
-var amqpAddress = "amqp://guest:guest@localhost:5672/"
+// var amqpAddress = "amqp://guest:guest@localhost:5672/"
 
-// var amqpAddress = "amqp://guest:guest@rabbitmq:5672/"
+var amqpAddress = "amqp://guest:guest@rabbitmq:5672/"
 
 func main() {
 	logx.ColoringEnabled = true
@@ -126,15 +126,16 @@ func publishCommands(commandBus *cqrs.CommandBus) func() {
 			StartDate: time.Now(),
 			EndDate:   time.Now().Add(time.Hour * 24 * 3),
 		}
+		fmt.Printf("\n\n\n")
 
-		m := fmt.Sprintf("[public] Guest public command [bookRoomCmd] room: %s", bookRoomCmd.RoomID)
+		m := fmt.Sprintf("[public] Guest public command [bookRoomCmd] room: %s ", bookRoomCmd.RoomID)
 		logx.Log(m, logx.FGWHITE, logx.BGBLUE)
 
 		if err := commandBus.Send(context.Background(), bookRoomCmd); err != nil {
 			panic(err)
 		}
 
-		time.Sleep(10 * time.Second)
+		time.Sleep(5 * time.Second)
 	}
 }
 

@@ -22,5 +22,15 @@ services:
       - GO_ENV=development
 
   rabbitmq:
-    image: rabbitmq:3.7
+    build:
+      context: .
+      dockerfile: ./Dockerfile.rmq
     restart: unless-stopped
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "5672" ]
+      interval: 5s
+      timeout: 15s
+      retries: 1

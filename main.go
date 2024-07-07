@@ -13,9 +13,11 @@ import (
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/ThreeDotsLabs/watermill/message/router/middleware"
 	"github.com/theritikchoure/logx"
+	"github.com/wudtichaikarun/watermill_101/events"
 )
 
-var amqpAddress = "amqp://guest:guest@localhost:5672/"
+// var amqpAddress = "amqp://guest:guest@localhost:5672/"
+var amqpAddress = "amqp://guest:guest@rabbitmq:5672/"
 
 func main() {
 	logx.ColoringEnabled = true
@@ -65,8 +67,8 @@ func main() {
 		},
 		CommandHandlers: func(cb *cqrs.CommandBus, eb *cqrs.EventBus) []cqrs.CommandHandler {
 			return []cqrs.CommandHandler{
-				BookRoomHandler{eb},
-				OrderBeerHandler{eb},
+				events.BookRoomHandler{EventBus: eb},
+				events.OrderBeerHandler{EventBus: eb},
 			}
 		},
 		CommandsPublisher: commandsPublisher,
@@ -83,8 +85,8 @@ func main() {
 		},
 		EventHandlers: func(cb *cqrs.CommandBus, eb *cqrs.EventBus) []cqrs.EventHandler {
 			return []cqrs.EventHandler{
-				OrderBeerOnRoomBooked{cb},
-				NewBookingsFinancialReport(),
+				events.OrderBeerOnRoomBooked{CommandBus: cb},
+				events.NewBookingsFinancialReport(),
 			}
 		},
 		EventsPublisher: eventsPublisher,
@@ -121,7 +123,7 @@ func publishCommands(commandBus *cqrs.CommandBus) func() {
 		startDate := timestamppb.New(time.Now())
 		endDate := timestamppb.New(time.Now().Add(time.Hour * 24 * 3))
 
-		bookRoomCmd := &BookRoom{
+		bookRoomCmd := &events.BookRoom{
 			RoomId:    fmt.Sprintf("%d", i),
 			GuestName: "John",
 			StartDate: startDate,
@@ -140,7 +142,7 @@ func publishCommands(commandBus *cqrs.CommandBus) func() {
 }
 
 /**
-	main.go
+	events.go
 		"[public] Guest public command [bookRoomCmd]"
 
 	book.room.command.go

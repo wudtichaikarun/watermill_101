@@ -1,6 +1,8 @@
 module github.com/wudtichaikarun/watermill_101
 
-go 1.19
+go 1.21.0
+
+toolchain go1.21.1
 
 require (
 	github.com/ThreeDotsLabs/watermill v1.2.0-rc.11

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package main;
+package events;
 
 import "google/protobuf/timestamp.proto";
 
